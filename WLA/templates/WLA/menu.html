@@ -1,0 +1,233 @@
+{% extends 'WLA/base.html' %}
+
+{% block content %}
+<h1 class="mb-4 fw-bold">Menú Principal</h1>
+
+<!-- SECCIÓN 1: TARIFAS -->
+<div class="mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <h2 class="h3 fw-bold mb-0">Tarifas</h2>
+    </div>
+    <table class="table table-bordered align-middle text-center">
+        <thead class="table-dark">
+            <tr>
+                <th>Servicio / Tramo</th>
+                <th>Categoría</th>
+                <th>Capacidad (2 Pax)</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for t in tarifas %}
+            <tr>
+                <td>{{ t.servicio }}</td>
+                <td>{{ t.get_categoria_display }}</td>
+                <td>${{ t.pax_2|default:"-" }}</td>
+                <td>
+                    {% if perms.WLA.change_tarifa %}
+                        <a href="{% url 'editar_tarifa' t.pk %}" class="btn btn-warning btn-sm">Editar</a>
+                    {% endif %}
+                    {% if perms.WLA.delete_tarifa %}
+                        <a href="{% url 'eliminar_tarifa' t.pk %}" class="btn btn-danger btn-sm">Eliminar</a>
+                    {% endif %}
+                    {% if not perms.WLA.change_tarifa and not perms.WLA.delete_tarifa %}
+                        <span class="text-muted">Solo lectura</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="4">No hay tarifas registradas.</td></tr>
+            {% endfor %}
+            <tr class="table-secondary fw-bold">
+                <td>VER MÁS...</td>
+                <td>...</td>
+                <td>...</td>
+                <td>
+                    <a href="{% url 'lista_tarifas' %}" class="btn btn-dark btn-sm fw-bold">IR A TARIFAS &rarr;</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- SECCIÓN 2: CONDUCTORES -->
+<div class="mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <h2 class="h3 fw-bold mb-0">Conductores</h2>
+    </div>
+    <table class="table table-bordered align-middle text-center">
+        <thead class="table-dark">
+            <tr>
+                <th>Nombre</th>
+                <th>RUT / DNI</th>
+                <th>Disponibilidad</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for c in conductores %}
+            <tr>
+                <td>{{ c.nombre }}</td>
+                <td>{{ c.rut_dni }}</td>
+                <td>
+                    <span class="badge {% if c.disponibilidad == 'DISPONIBLE' %}bg-success{% elif c.disponibilidad == 'EN_RUTA' %}bg-primary{% else %}bg-danger{% endif %}">
+                        {{ c.get_disponibilidad_display }}
+                    </span>
+                </td>
+                <td>
+                    {% if perms.WLA.change_conductor %}
+                        <a href="{% url 'editar_conductor' c.pk %}" class="btn btn-warning btn-sm">Editar</a>
+                    {% endif %}
+                    {% if perms.WLA.delete_conductor %}
+                        <a href="{% url 'eliminar_conductor' c.pk %}" class="btn btn-danger btn-sm">Eliminar</a>
+                    {% endif %}
+                    {% if not perms.WLA.change_conductor and not perms.WLA.delete_conductor %}
+                        <span class="text-muted">Solo lectura</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="4">No hay conductores registrados.</td></tr>
+            {% endfor %}
+            <tr class="table-secondary fw-bold">
+                <td>VER MÁS...</td>
+                <td>...</td>
+                <td>...</td>
+                <td>
+                    <a href="{% url 'lista_conductores' %}" class="btn btn-dark btn-sm fw-bold">IR A CONDUCTORES &rarr;</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- SECCIÓN 3: FLOTA -->
+<div class="mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <h2 class="h3 fw-bold mb-0">Flota</h2>
+    </div>
+    <table class="table table-bordered align-middle text-center">
+        <thead class="table-dark">
+            <tr>
+                <th>Patente</th>
+                <th>Tipo de Vehículo</th>
+                <th>Conductor Asignado</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for v in vehiculos %}
+            <tr>
+                <td><strong>{{ v.patente }}</strong></td>
+                <td>{{ v.get_tipo_vehiculo_display }}</td>
+                <td>{{ v.conductor_actual.nombre|default:"Sin asignar" }}</td>
+                <td>
+                    {% if perms.WLA.change_vehiculo %}
+                        <a href="{% url 'editar_vehiculo' v.pk %}" class="btn btn-warning btn-sm">Editar</a>
+                    {% endif %}
+                    {% if perms.WLA.delete_vehiculo %}
+                        <a href="{% url 'eliminar_vehiculo' v.pk %}" class="btn btn-danger btn-sm">Eliminar</a>
+                    {% endif %}
+                    {% if not perms.WLA.change_vehiculo and not perms.WLA.delete_vehiculo %}
+                        <span class="text-muted">Solo lectura</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="4">No hay vehículos registrados.</td></tr>
+            {% endfor %}
+            <tr class="table-secondary fw-bold">
+                <td>VER MÁS...</td>
+                <td>...</td>
+                <td>...</td>
+                <td>
+                    <a href="{% url 'lista_flota' %}" class="btn btn-dark btn-sm fw-bold">IR A FLOTA &rarr;</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- SECCIÓN 4: RESERVAS -->
+<div class="mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <h2 class="h3 fw-bold mb-0">Reservas</h2>
+    </div>
+    <table class="table table-bordered align-middle text-center">
+        <thead class="table-dark">
+            <tr>
+                <th># Reserva</th>
+                <th>Cliente</th>
+                <th>Fecha Servicio</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for r in reservas %}
+            <tr>
+                <td>#{{ r.id }}</td>
+                <td>{{ r.cliente_nombre }}</td>
+                <td>{{ r.fecha_servicio|date:"d/m/Y H:i" }}</td>
+                <td>
+                    <a href="{% url 'lista_reservas' %}" class="btn btn-info btn-sm">Ver Detalle</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="4">No hay reservas registradas.</td></tr>
+            {% endfor %}
+            <tr class="table-secondary fw-bold">
+                <td>VER MÁS...</td>
+                <td>...</td>
+                <td>...</td>
+                <td>
+                    <a href="{% url 'lista_reservas' %}" class="btn btn-dark btn-sm fw-bold">IR A RESERVAS &rarr;</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- SECCIÓN 5: CLIENTES -->
+<div class="mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <h2 class="h3 fw-bold mb-0">Clientes</h2>
+    </div>
+    <table class="table table-bordered align-middle text-center">
+        <thead class="table-dark">
+            <tr>
+                <th>Nombre</th>
+                <th>Email</th>
+                <th>Origen</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for c in clientes %}
+            <tr>
+                <td>{{ c.nombre }}</td>
+                <td>{{ c.email }}</td>
+                <td><span class="badge bg-info text-dark">{{ c.origen }}</span></td>
+                <td>
+                    {% if perms.WLA.change_cliente %}
+                        <a href="{% url 'editar_cliente' c.pk %}" class="btn btn-warning btn-sm">Editar</a>
+                    {% endif %}
+                    {% if perms.WLA.delete_cliente %}
+                        <a href="{% url 'eliminar_cliente' c.pk %}" class="btn btn-danger btn-sm">Eliminar</a>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="4">No hay clientes registrados.</td></tr>
+            {% endfor %}
+            <tr class="table-secondary fw-bold">
+                <td>VER MÁS...</td>
+                <td>...</td>
+                <td>...</td>
+                <td>
+                    <a href="{% url 'lista_clientes' %}" class="btn btn-dark btn-sm fw-bold">IR A CLIENTES &rarr;</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+{% endblock %}

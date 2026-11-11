@@ -1,0 +1,15 @@
+{% extends 'WLA/base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6 card p-4 shadow-sm text-center">
+        <h2>Confirmar Eliminación</h2>
+        <p class="mt-3">¿Deseas eliminar al cliente <strong>{{ cliente.nombre }}</strong>?</p>
+        <form method="post" class="mt-3">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Sí, eliminar</button>
+            <a href="{% url 'lista_clientes' %}" class="btn btn-secondary">Cancelar</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

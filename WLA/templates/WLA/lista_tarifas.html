@@ -1,0 +1,55 @@
+{% extends 'WLA/base.html' %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Tabla de Tarifas y Servicios</h2>
+    {% if perms.WLA.add_tarifa %}
+        <a href="{% url 'crear_tarifa' %}" class="btn btn-success">+ Nueva Tarifa</a>
+    {% endif %}
+</div>
+
+<table class="table table-bordered table-striped">
+    <thead class="table-dark">
+        <tr>
+            <th>Categoría</th>
+            <th>Servicio / Tramo</th>
+            <th>2 Pax</th>
+            <th>4 Pax</th>
+            <th>10 Pax</th>
+            <th>19 Pax</th>
+            <th>24 Pax</th>
+            <th>46 Pax</th>
+            <th class="text-center">Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for t in tarifas %}
+        <tr>
+            <td>{{ t.get_categoria_display }}</td>
+            <td>{{ t.servicio }}</td>
+            <td>${{ t.pax_2|default:"-" }}</td>
+            <td>${{ t.pax_4|default:"-" }}</td>
+            <td>${{ t.pax_10|default:"-" }}</td>
+            <td>${{ t.pax_19|default:"-" }}</td>
+            <td>${{ t.pax_24|default:"-" }}</td>
+            <td>${{ t.pax_46|default:"-" }}</td>
+            <td class="text-center">
+                {% if perms.WLA.change_tarifa %}
+                    <a href="{% url 'editar_tarifa' t.pk %}" class="btn btn-warning btn-sm">Editar</a>
+                {% endif %}
+                {% if perms.WLA.delete_tarifa %}
+                    <a href="{% url 'eliminar_tarifa' t.pk %}" class="btn btn-danger btn-sm">Eliminar</a>
+                {% endif %}
+                {% if not perms.WLA.change_tarifa and not perms.WLA.delete_tarifa %}
+                    <span class="text-muted">Solo lectura</span>
+                {% endif %}
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="9" class="text-center">No hay tarifas registradas.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

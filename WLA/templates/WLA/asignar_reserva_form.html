@@ -1,0 +1,23 @@
+{% extends 'WLA/base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 card p-4 shadow-sm">
+        <h2>Asignación Logística - Solicitud #{{ operacion.solicitud.id }}</h2>
+
+        <div class="alert alert-info mt-3">
+            <strong>Cliente:</strong> {{ operacion.solicitud.nombre_completo }} ({{ operacion.solicitud.get_origen_reserva_display }})<br>
+            <strong>Servicio:</strong> {{ operacion.solicitud.servicio.servicio }}<br>
+            <strong>Monto Total:</strong> ${{ operacion.solicitud.monto_total }} | 
+            <strong>Saldo Pendiente (90%):</strong> ${{ operacion.solicitud.saldo_pendiente_90 }}
+        </div>
+
+        <form method="post" class="mt-3">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-success">Guardar Asignación</button>
+            <a href="{% url 'lista_reservas' %}" class="btn btn-secondary">Cancelar</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

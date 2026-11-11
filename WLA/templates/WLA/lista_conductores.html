@@ -1,0 +1,56 @@
+{% extends 'WLA/base.html' %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Tabla de Conductores</h2>
+    {% if perms.WLA.add_conductor %}
+        <a href="{% url 'crear_conductor' %}" class="btn btn-success">+ Nuevo Conductor</a>
+    {% endif %}
+</div>
+
+<table class="table table-bordered table-hover align-middle">
+    <thead class="table-dark">
+        <tr>
+            <th>Nombre</th>
+            <th>RUT / DNI</th>
+            <th>Teléfono</th>
+            <th>Disponibilidad</th>
+            <th>Vencimiento Licencia</th>
+            <th class="text-center">Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for c in conductores %}
+        <tr>
+            <td>{{ c.nombre }}</td>
+            <td>{{ c.rut_dni }}</td>
+            <td>{{ c.telefono }}</td>
+            <td>
+                <span class="badge {% if c.disponibilidad == 'DISPONIBLE' %}bg-success{% elif c.disponibilidad == 'EN_RUTA' %}bg-primary{% else %}bg-danger{% endif %}">
+                    {{ c.get_disponibilidad_display }}
+                </span>
+            </td>
+            <td>
+                {{ c.vencimiento_licencia|date:"d/m/Y" }}
+                {% if c.licencia_por_vencer %}
+                    <span class="badge bg-warning text-dark">Próximo a vencer / Vencido</span>
+                {% endif %}
+            </td>
+            <td class="text-center">
+                {% if perms.WLA.change_conductor %}
+                    <a href="{% url 'editar_conductor' c.pk %}" class="btn btn-warning btn-sm">Editar</a>
+                {% endif %}
+                {% if perms.WLA.delete_conductor %}
+                    <a href="{% url 'eliminar_conductor' c.pk %}" class="btn btn-danger btn-sm">Eliminar</a>
+                {% endif %}
+                {% if not perms.WLA.change_conductor and not perms.WLA.delete_conductor %}
+                    <span class="text-muted">Solo lectura</span>
+                {% endif %}
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6" class="text-center">No hay conductores registrados.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
