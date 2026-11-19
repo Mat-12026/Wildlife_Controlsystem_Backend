@@ -1,7 +1,19 @@
-from django.urls import path
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
 from . import views
 
+router = DefaultRouter()
+router.register(r'manage/tarifas', views.TarifaViewSet, basename='manage-tarifas')
+router.register(r'manage/vehiculos', views.VehiculoViewSet, basename='manage-vehiculos')
+router.register(r'manage/conductores', views.ConductorViewSet, basename='manage-conductores')
+router.register(r'manage/clientes', views.ClienteViewSet, basename='manage-clientes')
+router.register(r'manage/reservas', views.SolicitudReservaViewSet, basename='manage-reservas')
+router.register(r'manage/asignaciones', views.ReservaOperativaViewSet, basename='manage-asignaciones')
+
 urlpatterns = [
+    # --- CRUD API REST PARA DASHBOARD REACT ---
+    path('api/', include(router.urls)),
+
     # --- ENDPOINTS API REST PARA REACT ---
     path('api/servicios/', views.lista_servicios_api, name='api_lista_servicios'),
     path('api/clientes/nuevo/', views.registrar_cliente, name='api_registrar_cliente'),
@@ -11,6 +23,7 @@ urlpatterns = [
     path('api/dashboard/vehiculos/', views.dashboard_vehiculos_api, name='api_dashboard_vehiculos'),
     path('api/dashboard/conductores/', views.dashboard_conductores_api, name='api_dashboard_conductores'),
     path('api/dashboard/asignaciones/', views.dashboard_asignaciones_api, name='api_dashboard_asignaciones'),
+    path('api/dashboard/notificaciones/', views.notificaciones_api, name='api_notificaciones'),
 
     # --- INICIO / DASHBOARD ---
     path('', views.menu_principal, name='menu_principal'),

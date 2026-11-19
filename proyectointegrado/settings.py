@@ -10,24 +10,26 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.1/ref/settings/
 """
 
+import os
 from pathlib import Path
 from decouple import config
 from corsheaders.defaults import default_headers
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/6.1/howto/deployment/checklist/
-
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = config('SECRET_KEY')
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config('DEBUG', default=True, cast=bool)
+# En Render la variable de entorno RENDER existe automáticamente (DEBUG=False); en local queda en True
+DEBUG = config('DEBUG', default=('RENDER' not in os.environ), cast=bool)
 
-ALLOWED_HOSTS = ['192.168.56.1', 'localhost', '127.0.0.1', 'both-smirk-entrust.ngrok-free.dev']
+ALLOWED_HOSTS = ['192.168.56.1', 'localhost', '127.0.0.1', '.onrender.com']
+RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
+if RENDER_EXTERNAL_HOSTNAME:
+    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
 
 
 # Application definition
@@ -39,14 +41,15 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'rest_framework',   #Django REST Framework
-    'corsheaders',      #Permite las conexiones entre React
+    'rest_framework',   # Django REST Framework
+    'corsheaders',      # Permite las conexiones con React
     'WLA',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',          # Conexiones desde Vercel/React
     'django.middleware.security.SecurityMiddleware',
-    'corsheaders.middleware.CorsMiddleware', #Agregador para lo de React
+    'whitenoise.middleware.WhiteNoiseMiddleware',     # Archivos estáticos (/admin/) en Render
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -76,23 +79,31 @@ WSGI_APPLICATION = 'proyectointegrado.wsgi.application'
 
 
 # Database
-# https://docs.djangoproject.com/en/6.1/ref/settings/#databases
+# Usa DATABASE_URL automáticamente en Render y tus variables locales en desarrollo
+DATABASE_URL = config('DATABASE_URL', default=None)
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': config('DB_NAME'),
-        'USER': config('DB_USER'),
-        'PASSWORD': config('DB_PASSWORD'),
-        'HOST': config('DB_HOST'),
-        'PORT': config('DB_PORT'),
+if DATABASE_URL:
+    DATABASES = {
+        'default': dj_database_url.parse(
+            DATABASE_URL,
+            conn_max_age=600,
+            conn_health_checks=True,
+        )
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': config('DB_NAME'),
+            'USER': config('DB_USER'),
+            'PASSWORD': config('DB_PASSWORD'),
+            'HOST': config('DB_HOST'),
+            'PORT': config('DB_PORT'),
+        }
+    }
 
 
 # Password validation
-# https://docs.djangoproject.com/en/6.1/ref/settings/#auth-password-validators
-
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -110,50 +121,57 @@ AUTH_PASSWORD_VALIDATORS = [
 
 
 # Internationalization
-# https://docs.djangoproject.com/en/6.1/topics/i18n/
+LANGUAGE_CODE = 'es-cl'
 
-LANGUAGE_CODE = 'en-us'
-
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Punta_Arenas'
 
 USE_I18N = True
 
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/6.1/howto/static-files/
+# Static & Media files (CSS, JavaScript, Images)
+STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-STATIC_URL = 'static/'
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
+# Configuración oficial para Django 6.1 con WhiteNoise
+STORAGES = {
+    'default': {
+        'BACKEND': 'django.core.files.storage.FileSystemStorage',
+    },
+    'staticfiles': {
+        'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
+    },
+}
 
 
 # Email
-# https://docs.djangoproject.com/en/6.1/topics/email/#topic-email-configuration
-
 MAILERS = {
     'default': {
         'BACKEND': 'django.core.mail.backends.console.EmailBackend',
     },
 }
 
-# Permitir solicitudes desde el puerto donde corre React (ej. Vite / Create React App)
+
+# CORS y Seguridad (Vercel + Local + Render)
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "http://localhost:5173",
-    "http://127.0.0.1:3000",
-    "http://127.0.0.1:5173",
+    'http://localhost:3000',
+    'http://localhost:5173',
+    'http://127.0.0.1:3000',
+    'http://127.0.0.1:5173',
     'https://frontend-react-sandy-kappa.vercel.app',
 ]
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://frontend-react-sandy-kappa.vercel.app',
+    'https://*.onrender.com',
+]
+
+CORS_ALLOW_HEADERS = list(default_headers)
 
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'menu_principal'
 LOGOUT_REDIRECT_URL = 'login'
-
-CSRF_TRUSTED_ORIGINS = [
-    'https://frontend-react-sandy-kappa.vercel.app',
-    'https://both-smirk-entrust.ngrok-free.dev',
-]
-
-CORS_ALLOW_HEADERS = list(default_headers) + [
-    'ngrok-skip-browser-warning',
-]

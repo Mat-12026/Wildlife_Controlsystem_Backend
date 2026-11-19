@@ -1,3 +1,4 @@
+from datetime import date, timedelta
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth import authenticate
@@ -5,7 +6,7 @@ from rest_framework.decorators import api_view, permission_classes, parser_class
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import status, viewsets
 
 from .models import Tarifa, Conductor, Vehiculo, SolicitudReserva, ReservaOperativa, Cliente
 from .forms import TarifaForm, ConductorForm, VehiculoForm, AsignarReservaForm, ClienteForm
@@ -29,7 +30,7 @@ def menu_principal(request):
     })
 
 
-# --- 1. MÓDULO TARIFAS (CRUD) ---
+# --- 1. MÓDULO TARIFAS (CRUD NATIVO) ---
 @login_required
 def lista_tarifas(request):
     return render(request, 'WLA/lista_tarifas.html', {'tarifas': Tarifa.objects.all()})
@@ -69,7 +70,7 @@ def eliminar_tarifa(request, pk):
     return render(request, 'WLA/tarifa_confirm_delete.html', {'tarifa': tarifa})
 
 
-# --- 2. MÓDULO CONDUCTORES (CRUD) ---
+# --- 2. MÓDULO CONDUCTORES (CRUD NATIVO) ---
 @login_required
 def lista_conductores(request):
     return render(request, 'WLA/lista_conductores.html', {'conductores': Conductor.objects.all()})
@@ -109,7 +110,7 @@ def eliminar_conductor(request, pk):
     return render(request, 'WLA/conductor_confirm_delete.html', {'conductor': conductor})
 
 
-# --- 3. MÓDULO FLOTA / VEHÍCULOS (CRUD) ---
+# --- 3. MÓDULO FLOTA / VEHÍCULOS (CRUD NATIVO) ---
 @login_required
 def lista_flota(request):
     return render(request, 'WLA/lista_flota.html', {'vehiculos': Vehiculo.objects.all()})
@@ -149,7 +150,7 @@ def eliminar_vehiculo(request, pk):
     return render(request, 'WLA/vehiculo_confirm_delete.html', {'vehiculo': vehiculo})
 
 
-# --- 4. MÓDULO RESERVAS ---
+# --- 4. MÓDULO RESERVAS (NATIVO) ---
 @login_required
 def lista_reservas(request):
     reservas_operativas = ReservaOperativa.objects.select_related('solicitud', 'conductor', 'vehiculo').all()
@@ -172,7 +173,7 @@ def editar_operacion(request, pk):
     })
 
 
-# --- 5. MÓDULO CLIENTES ---
+# --- 5. MÓDULO CLIENTES (NATIVO) ---
 @login_required
 def lista_clientes(request):
     clientes = Cliente.objects.all()
@@ -211,6 +212,39 @@ def eliminar_cliente(request, pk):
         cliente.delete()
         return redirect('lista_clientes')
     return render(request, 'WLA/cliente_confirm_delete.html', {'cliente': cliente})
+
+
+# --- VIEWSETS CRUD COMPLETOS PARA EL DASHBOARD REACT ---
+
+class TarifaViewSet(viewsets.ModelViewSet):
+    queryset = Tarifa.objects.all().order_by('id')
+    serializer_class = TarifaSerializer
+    permission_classes = [AllowAny]
+
+class VehiculoViewSet(viewsets.ModelViewSet):
+    queryset = Vehiculo.objects.all().order_by('id')
+    serializer_class = VehiculoSerializer
+    permission_classes = [AllowAny]
+
+class ConductorViewSet(viewsets.ModelViewSet):
+    queryset = Conductor.objects.all().order_by('id')
+    serializer_class = ConductorSerializer
+    permission_classes = [AllowAny]
+
+class ClienteViewSet(viewsets.ModelViewSet):
+    queryset = Cliente.objects.all().order_by('-id')
+    serializer_class = ClienteSerializer
+    permission_classes = [AllowAny]
+
+class SolicitudReservaViewSet(viewsets.ModelViewSet):
+    queryset = SolicitudReserva.objects.select_related('cliente').all().order_by('-created_at')
+    serializer_class = SolicitudReservaSerializer
+    permission_classes = [AllowAny]
+
+class ReservaOperativaViewSet(viewsets.ModelViewSet):
+    queryset = ReservaOperativa.objects.select_related('solicitud', 'conductor', 'vehiculo').all().order_by('-id')
+    serializer_class = ReservaOperativaSerializer
+    permission_classes = [AllowAny]
 
 
 # --- API ENDPOINTS PARA REACT ---
@@ -273,19 +307,29 @@ def crear_reserva_api(request):
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def login_api(request):
-    """Valida el usuario corporativo de Django registrado en PostgreSQL."""
+    """Valida el usuario creado en Django Admin, verifica su grupo y devuelve su ficha."""
     username = request.data.get('username')
     password = request.data.get('password')
     user = authenticate(username=username, password=password)
     
     if user is not None and user.is_active:
+        es_admin = (
+            user.is_superuser
+            or user.groups.filter(name='Administrador').exists()
+            or (user.is_staff and not user.groups.filter(name='Operador').exists())
+        )
+        role = 'admin' if es_admin else 'operator'
+        perfil = getattr(user, 'perfil', None)
+        nombre_mostrar = perfil.nombre_completo if (perfil and perfil.nombre_completo) else user.username
+
         return Response({
             'mensaje': 'Authentication successful',
-            'username': user.username,
-            'is_staff': user.is_staff
+            'username': nombre_mostrar,
+            'is_staff': user.is_staff,
+            'role': role
         }, status=status.HTTP_200_OK)
     
-    return Response({'error': 'Invalid corporate username or password'}, status=status.HTTP_401_UNAUTHORIZED)
+    return Response({'error': 'Credenciales corporativas inválidas.'}, status=status.HTTP_401_UNAUTHORIZED)
 
 
 @api_view(['GET'])
@@ -318,3 +362,79 @@ def dashboard_asignaciones_api(request):
     asignaciones = ReservaOperativa.objects.select_related('solicitud', 'conductor', 'vehiculo').all()
     serializer = ReservaOperativaSerializer(asignaciones, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def notificaciones_api(request):
+    """Genera alertas automáticas de vencimientos de flota/choferes, reservas y pagos."""
+    hoy = date.today()
+    limite_30_dias = hoy + timedelta(days=30)
+    notificaciones = []
+
+    for c in Conductor.objects.all():
+        venc_lic = getattr(c, 'vencimiento_licencia', None)
+        if venc_lic:
+            if venc_lic < hoy:
+                notificaciones.append({
+                    'tipo': 'danger',
+                    'categoria': 'Conductor',
+                    'titulo': f'Licencia Vencida: {c.nombre}',
+                    'mensaje': f'La licencia expiró el {venc_lic}.'
+                })
+            elif venc_lic <= limite_30_dias:
+                dias = (venc_lic - hoy).days
+                notificaciones.append({
+                    'tipo': 'warning',
+                    'categoria': 'Conductor',
+                    'titulo': f'Licencia por Vencer: {c.nombre}',
+                    'mensaje': f'Vence en {dias} días ({venc_lic}).'
+                })
+
+    for v in Vehiculo.objects.all():
+        docs = [
+            ('Revisión Técnica', getattr(v, 'fecha_revision_tecnica', None)),
+            ('SOAP', getattr(v, 'fecha_soap', None)),
+            ('Permiso Circulación', getattr(v, 'fecha_permiso_circulacion', None)),
+        ]
+        for nombre_doc, fecha_doc in docs:
+            if fecha_doc:
+                if fecha_doc < hoy:
+                    notificaciones.append({
+                        'tipo': 'danger',
+                        'categoria': 'Vehículo',
+                        'titulo': f'{nombre_doc} Vencido: {v.patente}',
+                        'mensaje': f'Expiró el {fecha_doc}.'
+                    })
+                elif fecha_doc <= limite_30_dias:
+                    notificaciones.append({
+                        'tipo': 'warning',
+                        'categoria': 'Vehículo',
+                        'titulo': f'{nombre_doc} por Vencer: {v.patente}',
+                        'mensaje': f'Vence el {fecha_doc}.'
+                    })
+
+    for r in SolicitudReserva.objects.select_related('cliente').all().order_by('-created_at')[:10]:
+        notificaciones.append({
+            'tipo': 'info',
+            'categoria': 'Reserva',
+            'titulo': f'Nueva Reserva #{r.id}',
+            'mensaje': f'Cliente: {r.cliente.nombre} - Destino: {r.destino} ({r.fecha_viaje}).'
+        })
+        if hasattr(r, 'operacion'):
+            if r.operacion.estado_pago_90 == 'EN_ESPERA':
+                notificaciones.append({
+                    'tipo': 'warning',
+                    'categoria': 'Pago Pendiente',
+                    'titulo': f'Cobro Pendiente (90%) - Reserva #{r.id}',
+                    'mensaje': f'Saldo: ${r.saldo_pendiente_90} USD por cobrar a {r.cliente.nombre}.'
+                })
+            elif r.operacion.estado_pago_90 == 'PAGADO':
+                notificaciones.append({
+                    'tipo': 'success',
+                    'categoria': 'Pago Completado',
+                    'titulo': f'Pago 100% Liquidado - Reserva #{r.id}',
+                    'mensaje': f'El cliente {r.cliente.nombre} completó el 100% (${r.costo_total} USD).'
+                })
+
+    return Response(notificaciones, status=status.HTTP_200_OK)

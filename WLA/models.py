@@ -1,6 +1,7 @@
 from django.db import models
 from datetime import date, timedelta
-from decimal import Decimal  
+from decimal import Decimal
+from django.contrib.auth.models import User 
 
 class Cliente(models.Model):
     ORIGEN_CHOICES = [
@@ -140,3 +141,27 @@ class ReservaOperativa(models.Model):
 
     def __str__(self):
         return f"Operación #{self.id} - Solicitud #{self.solicitud.id}"
+
+class PerfilUsuario(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='perfil')
+    nombre_completo = models.CharField(max_length=200, verbose_name="Nombre completo")
+    rut_dni = models.CharField(max_length=20, unique=True, null=True, blank=True, verbose_name="RUT / DNI")
+    fecha_nacimiento = models.DateField(null=True, blank=True, verbose_name="Fecha de nacimiento")
+    residencia = models.CharField(max_length=255, blank=True, verbose_name="Ciudad y dirección de residencia")
+    telefono = models.CharField(max_length=30, blank=True, verbose_name="Teléfono de contacto")
+    
+    # Seguridad ocupacional
+    contacto_emergencia_nombre = models.CharField(max_length=150, blank=True, verbose_name="Nombre contacto de emergencia")
+    contacto_emergencia_telefono = models.CharField(max_length=30, blank=True, verbose_name="Teléfono de emergencia")
+    
+    # Ética, confidencialidad y protección de datos
+    fecha_ingreso = models.DateField(null=True, blank=True, verbose_name="Fecha de ingreso")
+    consentimiento_datos = models.BooleanField(default=False, verbose_name="Autoriza tratamiento ético de datos personales")
+    acepta_codigo_etica = models.BooleanField(default=False, verbose_name="Acepta código de ética y confidencialidad de clientes")
+
+    class Meta:
+        verbose_name = "Perfil Ético y Laboral"
+        verbose_name_plural = "Perfiles Éticos y Laborales"
+
+    def __str__(self):
+        return f"{self.nombre_completo} ({self.user.username})"
