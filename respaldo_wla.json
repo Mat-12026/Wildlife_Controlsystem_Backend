@@ -1,0 +1,465 @@
+[
+{
+  "model": "WLA.cliente",
+  "pk": 3,
+  "fields": {
+    "nombre": "Matias Mascareña Oyarzo",
+    "telefono": "321654",
+    "email": "matiasmascarena825@gmail.com",
+    "dieta": "Ninguna",
+    "nacionalidad": "Chileno",
+    "edad": 26,
+    "origen": "Directo",
+    "foto_documento": "documentos/Captura_de_pantalla_2026-10-12_143754.png"
+  }
+},
+{
+  "model": "WLA.cliente",
+  "pk": 4,
+  "fields": {
+    "nombre": "Alvaro Ojeda",
+    "telefono": "98765723",
+    "email": "correo@gmail.com",
+    "dieta": "Ninguna",
+    "nacionalidad": "Chileno",
+    "edad": 19,
+    "origen": "Directo",
+    "foto_documento": "documentos/nueva-york_3840x2400_xtrafondos.com.jpg"
+  }
+},
+{
+  "model": "WLA.cliente",
+  "pk": 5,
+  "fields": {
+    "nombre": "Profe James",
+    "telefono": "94672043",
+    "email": "james@gmail.com",
+    "dieta": "Ninguna",
+    "nacionalidad": "Chileno",
+    "edad": 36,
+    "origen": "Directo",
+    "foto_documento": "documentos/Captura_de_pantalla_2026-10-09_141711.png"
+  }
+},
+{
+  "model": "WLA.cliente",
+  "pk": 6,
+  "fields": {
+    "nombre": "Juan Esteban",
+    "telefono": "+56958462684",
+    "email": "pe@gmail.com",
+    "dieta": "Ninguna",
+    "nacionalidad": "Peruana",
+    "edad": 26,
+    "origen": "Directo",
+    "foto_documento": "documentos/Captura_de_pantalla_2026-10-22_183739.png"
+  }
+},
+{
+  "model": "WLA.cliente",
+  "pk": 7,
+  "fields": {
+    "nombre": "Dennis",
+    "telefono": "123455689",
+    "email": "dennis@gmail.com",
+    "dieta": "Ninguna",
+    "nacionalidad": "Chilena",
+    "edad": 36,
+    "origen": "Directo",
+    "foto_documento": "documentos/Captura_de_pantalla_2026-01-12_114708.png"
+  }
+},
+{
+  "model": "WLA.cliente",
+  "pk": 8,
+  "fields": {
+    "nombre": "angel",
+    "telefono": "99997987",
+    "email": "angel@gmail.com",
+    "dieta": "Ninguna",
+    "nacionalidad": "chile",
+    "edad": -1,
+    "origen": "Directo",
+    "foto_documento": "documentos/Captura_de_pantalla_2026-09-01_122201.png"
+  }
+},
+{
+  "model": "WLA.cliente",
+  "pk": 9,
+  "fields": {
+    "nombre": "Elian",
+    "telefono": "123456789",
+    "email": "elian@gmail.com",
+    "dieta": "Ninguna",
+    "nacionalidad": "Argentina",
+    "edad": 22,
+    "origen": "Directo",
+    "foto_documento": "documentos/Shotaro-GTAO-LegendaryMS.webp"
+  }
+},
+{
+  "model": "WLA.cliente",
+  "pk": 10,
+  "fields": {
+    "nombre": "Juan Pablo",
+    "telefono": "84768395",
+    "email": "juan@gmail.com",
+    "dieta": "Ninguna",
+    "nacionalidad": "Bolivia",
+    "edad": 27,
+    "origen": "Directo",
+    "foto_documento": "documentos/ajuste_de_color_y_posterizado.jpg"
+  }
+},
+{
+  "model": "WLA.cliente",
+  "pk": 11,
+  "fields": {
+    "nombre": "homero sinsom",
+    "telefono": "+569888777",
+    "email": "hsinsom@gmail.com",
+    "dieta": "Ninguna",
+    "nacionalidad": "Chile",
+    "edad": -1,
+    "origen": "Directo",
+    "foto_documento": "documentos/homero.jpg"
+  }
+},
+{
+  "model": "WLA.tarifa",
+  "pk": 1,
+  "fields": {
+    "categoria": "TRASLADO",
+    "servicio": "El Calafate Airport (TRF IN / OUT)",
+    "origen": "El Calafate",
+    "descripcion": "Punctual airport pick-up or drop-off connection.",
+    "imagen": "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=600&q=80",
+    "pax_2": "25.00",
+    "pax_4": "60.00",
+    "pax_10": "100.00",
+    "pax_19": null,
+    "pax_24": null,
+    "pax_46": null
+  }
+},
+{
+  "model": "WLA.tarifa",
+  "pk": 2,
+  "fields": {
+    "categoria": "EXCURSION",
+    "servicio": "Torres del Paine Full Day - Private Tour",
+    "origen": "El Calafate",
+    "descripcion": "Private day excursion to iconic viewpoints in Torres del Paine.",
+    "imagen": "https://images.unsplash.com/photo-1527004013197-933c4bb611b3?auto=format&fit=crop&w=600&q=80",
+    "pax_2": "710.00",
+    "pax_4": "880.00",
+    "pax_10": "1150.00",
+    "pax_19": null,
+    "pax_24": null,
+    "pax_46": null
+  }
+},
+{
+  "model": "WLA.tarifa",
+  "pk": 3,
+  "fields": {
+    "categoria": "EXCURSION",
+    "servicio": "Perito Moreno Glacier - Big Ice Trekking",
+    "origen": "El Calafate",
+    "descripcion": "Deep ice hiking exploration inside the glacier blue caves.",
+    "imagen": "https://images.unsplash.com/photo-1517411032315-54ef2cb783bb?auto=format&fit=crop&w=600&q=80",
+    "pax_2": "180.00",
+    "pax_4": "250.00",
+    "pax_10": "280.00",
+    "pax_19": null,
+    "pax_24": null,
+    "pax_46": null
+  }
+},
+{
+  "model": "WLA.tarifa",
+  "pk": 4,
+  "fields": {
+    "categoria": "TRASLADO",
+    "servicio": "Punta Arenas - Torres del Paine Transfer",
+    "origen": "Punta Arenas",
+    "descripcion": "One-way overland connection between Punta Arenas and the park.",
+    "imagen": "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80",
+    "pax_2": "600.00",
+    "pax_4": "700.00",
+    "pax_10": "900.00",
+    "pax_19": null,
+    "pax_24": null,
+    "pax_46": null
+  }
+},
+{
+  "model": "WLA.tarifa",
+  "pk": 5,
+  "fields": {
+    "categoria": "EXCURSION",
+    "servicio": "El Chaltén Full Day Tour",
+    "origen": "El Calafate",
+    "descripcion": "Full-day trip to Argentina's trekking capital under Mount Fitz Roy.",
+    "imagen": "https://images.unsplash.com/photo-1486870591958-9b9d0d1dda99?auto=format&fit=crop&w=600&q=80",
+    "pax_2": "275.00",
+    "pax_4": "480.00",
+    "pax_10": "550.00",
+    "pax_19": null,
+    "pax_24": null,
+    "pax_46": null
+  }
+},
+{
+  "model": "WLA.solicitudreserva",
+  "pk": 1,
+  "fields": {
+    "cliente": 3,
+    "fecha_viaje": "2026-11-20",
+    "punto_pickup": "Inacap",
+    "destino": "Aeropuerto El Calafate (TRF IN / TRF OUT)",
+    "cantidad_pasajeros": 1,
+    "costo_total": "25.00",
+    "tipo_servicio": "Traslado",
+    "monto_abono_10": "2.50",
+    "saldo_pendiente_90": "22.50",
+    "estado_reserva": "RESERVADO",
+    "created_at": "2026-10-21T22:27:00.827Z"
+  }
+},
+{
+  "model": "WLA.solicitudreserva",
+  "pk": 2,
+  "fields": {
+    "cliente": 4,
+    "fecha_viaje": "2026-11-22",
+    "punto_pickup": "Mi casa",
+    "destino": "Aeropuerto El Calafate (TRF IN / TRF OUT)",
+    "cantidad_pasajeros": 1,
+    "costo_total": "25.00",
+    "tipo_servicio": "Traslado",
+    "monto_abono_10": "2.50",
+    "saldo_pendiente_90": "22.50",
+    "estado_reserva": "RESERVADO",
+    "created_at": "2026-10-22T20:05:15.569Z"
+  }
+},
+{
+  "model": "WLA.solicitudreserva",
+  "pk": 3,
+  "fields": {
+    "cliente": 5,
+    "fecha_viaje": "2026-11-28",
+    "punto_pickup": "Inacap",
+    "destino": "Terminal de Ómnibus (TRF IN / TRF OUT)",
+    "cantidad_pasajeros": 1,
+    "costo_total": "21.00",
+    "tipo_servicio": "Traslado",
+    "monto_abono_10": "2.10",
+    "saldo_pendiente_90": "18.90",
+    "estado_reserva": "RESERVADO",
+    "created_at": "2026-10-22T21:51:29.317Z"
+  }
+},
+{
+  "model": "WLA.solicitudreserva",
+  "pk": 4,
+  "fields": {
+    "cliente": 6,
+    "fecha_viaje": "2026-11-28",
+    "punto_pickup": "Mi Casa",
+    "destino": "Aeropuerto El Calafate (TRF IN / TRF OUT)",
+    "cantidad_pasajeros": 1,
+    "costo_total": "25.00",
+    "tipo_servicio": "Traslado",
+    "monto_abono_10": "2.50",
+    "saldo_pendiente_90": "22.50",
+    "estado_reserva": "RESERVADO",
+    "created_at": "2026-10-22T21:54:19.025Z"
+  }
+},
+{
+  "model": "WLA.solicitudreserva",
+  "pk": 5,
+  "fields": {
+    "cliente": 7,
+    "fecha_viaje": "2026-11-29",
+    "punto_pickup": "Inacap",
+    "destino": "Aeropuerto El Calafate (TRF IN / TRF OUT)",
+    "cantidad_pasajeros": 1,
+    "costo_total": "25.00",
+    "tipo_servicio": "Traslado",
+    "monto_abono_10": "2.50",
+    "saldo_pendiente_90": "22.50",
+    "estado_reserva": "RESERVADO",
+    "created_at": "2026-10-22T23:30:24.162Z"
+  }
+},
+{
+  "model": "WLA.solicitudreserva",
+  "pk": 6,
+  "fields": {
+    "cliente": 8,
+    "fecha_viaje": "2026-12-04",
+    "punto_pickup": "asd",
+    "destino": "FTE - Punta Arenas (CHILE)",
+    "cantidad_pasajeros": 1,
+    "costo_total": "850.00",
+    "tipo_servicio": "Traslado",
+    "monto_abono_10": "85.00",
+    "saldo_pendiente_90": "765.00",
+    "estado_reserva": "RESERVADO",
+    "created_at": "2026-10-28T18:51:34.082Z"
+  }
+},
+{
+  "model": "WLA.solicitudreserva",
+  "pk": 7,
+  "fields": {
+    "cliente": 9,
+    "fecha_viaje": "2026-12-31",
+    "punto_pickup": "Mi casa",
+    "destino": "El Calafate Airport (TRF IN / OUT)",
+    "cantidad_pasajeros": 1,
+    "costo_total": "25.00",
+    "tipo_servicio": "Transfer",
+    "monto_abono_10": "2.50",
+    "saldo_pendiente_90": "22.50",
+    "estado_reserva": "RESERVADO",
+    "created_at": "2026-11-05T22:11:06.684Z"
+  }
+},
+{
+  "model": "WLA.solicitudreserva",
+  "pk": 8,
+  "fields": {
+    "cliente": 10,
+    "fecha_viaje": "2026-12-12",
+    "punto_pickup": "salvador allende",
+    "destino": "El Calafate Airport (TRF IN / OUT)",
+    "cantidad_pasajeros": 2,
+    "costo_total": "25.00",
+    "tipo_servicio": "Transfer",
+    "monto_abono_10": "2.50",
+    "saldo_pendiente_90": "22.50",
+    "estado_reserva": "RESERVADO",
+    "created_at": "2026-11-11T19:56:57.293Z"
+  }
+},
+{
+  "model": "WLA.solicitudreserva",
+  "pk": 9,
+  "fields": {
+    "cliente": 11,
+    "fecha_viaje": "2026-12-17",
+    "punto_pickup": "avenida bulnes 123",
+    "destino": "Torres del Paine Full Day - Private Tour",
+    "cantidad_pasajeros": 1,
+    "costo_total": "710.00",
+    "tipo_servicio": "Tour",
+    "monto_abono_10": "71.00",
+    "saldo_pendiente_90": "639.00",
+    "estado_reserva": "RESERVADO",
+    "created_at": "2026-11-11T20:25:53.759Z"
+  }
+},
+{
+  "model": "WLA.reservaoperativa",
+  "pk": 1,
+  "fields": {
+    "solicitud": 1,
+    "conductor": null,
+    "vehiculo": null,
+    "estado_pago_90": "EN_ESPERA",
+    "updated_at": "2026-10-21T22:27:00.832Z"
+  }
+},
+{
+  "model": "WLA.reservaoperativa",
+  "pk": 2,
+  "fields": {
+    "solicitud": 2,
+    "conductor": null,
+    "vehiculo": null,
+    "estado_pago_90": "EN_ESPERA",
+    "updated_at": "2026-10-22T20:05:15.572Z"
+  }
+},
+{
+  "model": "WLA.reservaoperativa",
+  "pk": 3,
+  "fields": {
+    "solicitud": 3,
+    "conductor": null,
+    "vehiculo": null,
+    "estado_pago_90": "EN_ESPERA",
+    "updated_at": "2026-10-22T21:51:29.322Z"
+  }
+},
+{
+  "model": "WLA.reservaoperativa",
+  "pk": 4,
+  "fields": {
+    "solicitud": 4,
+    "conductor": null,
+    "vehiculo": null,
+    "estado_pago_90": "EN_ESPERA",
+    "updated_at": "2026-10-22T21:54:19.028Z"
+  }
+},
+{
+  "model": "WLA.reservaoperativa",
+  "pk": 5,
+  "fields": {
+    "solicitud": 5,
+    "conductor": null,
+    "vehiculo": null,
+    "estado_pago_90": "EN_ESPERA",
+    "updated_at": "2026-10-22T23:30:24.171Z"
+  }
+},
+{
+  "model": "WLA.reservaoperativa",
+  "pk": 6,
+  "fields": {
+    "solicitud": 6,
+    "conductor": null,
+    "vehiculo": null,
+    "estado_pago_90": "EN_ESPERA",
+    "updated_at": "2026-10-28T18:51:34.093Z"
+  }
+},
+{
+  "model": "WLA.reservaoperativa",
+  "pk": 7,
+  "fields": {
+    "solicitud": 7,
+    "conductor": null,
+    "vehiculo": null,
+    "estado_pago_90": "EN_ESPERA",
+    "updated_at": "2026-11-05T22:11:06.688Z"
+  }
+},
+{
+  "model": "WLA.reservaoperativa",
+  "pk": 8,
+  "fields": {
+    "solicitud": 8,
+    "conductor": null,
+    "vehiculo": null,
+    "estado_pago_90": "EN_ESPERA",
+    "updated_at": "2026-11-11T19:56:57.296Z"
+  }
+},
+{
+  "model": "WLA.reservaoperativa",
+  "pk": 9,
+  "fields": {
+    "solicitud": 9,
+    "conductor": null,
+    "vehiculo": null,
+    "estado_pago_90": "EN_ESPERA",
+    "updated_at": "2026-11-19T00:25:42.214Z"
+  }
+}
+]
