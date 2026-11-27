@@ -24,6 +24,7 @@ urlpatterns = [
     path('api/dashboard/conductores/', views.dashboard_conductores_api, name='api_dashboard_conductores'),
     path('api/dashboard/asignaciones/', views.dashboard_asignaciones_api, name='api_dashboard_asignaciones'),
     path('api/dashboard/notificaciones/', views.notificaciones_api, name='api_notificaciones'),
+    path('api/vehiculos/consultar-patente/<str:patente>/', views.consultar_patente_chile, name='consultar-patente'),
 
     # --- INICIO / DASHBOARD ---
     path('', views.menu_principal, name='menu_principal'),

@@ -1,4 +1,10 @@
+import json
+import os
+import re
+import urllib.error
+import urllib.request
 from datetime import date, timedelta
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth import authenticate
@@ -248,6 +254,68 @@ class ReservaOperativaViewSet(viewsets.ModelViewSet):
 
 
 # --- API ENDPOINTS PARA REACT ---
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def consultar_patente_chile(request, patente):
+    """Consulta marca, modelo y año de una patente chilena para autocompletar en flota."""
+    patente_limpia = re.sub(r'[^A-Za-z0-9]', '', patente or '').upper()
+
+    if not re.match(r'^[A-Z]{2}([A-Z]{2}|\d{2})\d{2}$', patente_limpia):
+        return Response(
+            {
+                'encontrado': False,
+                'error': 'Formato de patente chilena inválido (ej: KJHS45 o AB1234).'
+            },
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    url = f'https://api.boostr.cl/vehicle/{patente_limpia}.json'
+    headers = {
+        'Accept': 'application/json',
+        'User-Agent': 'WildLifeAdventure/1.0'
+    }
+    api_key = os.environ.get('BOOSTR_API_KEY')
+    if api_key:
+        headers['X-API-KEY'] = api_key
+
+    try:
+        req = urllib.request.Request(url, headers=headers, method='GET')
+        with urllib.request.urlopen(req, timeout=6) as resp:
+            payload = json.loads(resp.read().decode('utf-8'))
+            data = payload.get('data') if isinstance(payload, dict) else None
+
+            if isinstance(data, dict) and (data.get('make') or data.get('model') or data.get('year')):
+                return Response({
+                    'encontrado': True,
+                    'patente': patente_limpia,
+                    'marca': data.get('make') or '',
+                    'modelo': data.get('model') or '',
+                    'anio': data.get('year') or None,
+                }, status=status.HTTP_200_OK)
+    except (urllib.error.HTTPError, urllib.error.URLError, TimeoutError, ValueError, Exception):
+        pass
+
+    # Respaldo: verificar si la patente ya existe en PostgreSQL con datos cargados
+    existente = Vehiculo.objects.filter(patente__iexact=patente_limpia).first()
+    if existente and (getattr(existente, 'marca', None) or getattr(existente, 'modelo', None) or getattr(existente, 'anio', None)):
+        return Response({
+            'encontrado': True,
+            'patente': patente_limpia,
+            'marca': getattr(existente, 'marca', '') or '',
+            'modelo': getattr(existente, 'modelo', '') or '',
+            'anio': getattr(existente, 'anio', None),
+        }, status=status.HTTP_200_OK)
+
+    return Response({
+        'encontrado': False,
+        'patente': patente_limpia,
+        'marca': '',
+        'modelo': '',
+        'anio': None,
+        'mensaje': 'No se encontraron datos automáticos para esta patente. Puedes ingresar marca, modelo y año manualmente.'
+    }, status=status.HTTP_200_OK)
+
 
 @api_view(['GET'])
 @permission_classes([AllowAny])

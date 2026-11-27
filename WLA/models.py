@@ -88,6 +88,10 @@ class Vehiculo(models.Model):
     capacidad_pax = models.IntegerField(default=4)
     conductor_actual = models.ForeignKey(Conductor, on_delete=models.SET_NULL, null=True, blank=True, related_name='vehiculos_asignados')
     fecha_revision_tecnica = models.DateField()
+    marca = models.CharField(max_length=60, null=True, blank=True)
+    modelo = models.CharField(max_length=80, null=True, blank=True)
+    anio = models.PositiveIntegerField(null=True, blank=True)
+    fecha_revision_tecnica = models.DateField()
     fecha_soap = models.DateField(null=True, blank=True)
     fecha_permiso_circulacion = models.DateField(null=True, blank=True)
 
